@@ -1,0 +1,8 @@
+*
+!.gitignore
+!/inference/
+!/models/
+!/preprocessing/
+!/train/
+!config.py
+!__init__.py
