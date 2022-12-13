@@ -11,6 +11,7 @@ Preprocess
 ``python preprocess.py --train-src data/raw/train.ru_en.ru --train-trg data/raw/train.ru_en.en --val-src data/raw/valid.ru_en.ru --val-trg data/raw/valid.ru_en.en --test-src data/raw/test.ru_en.ru --test-trg data/raw/test.ru_en.en --src-lang ru --trg-lang en --src-size 4000 --trg-size 4000 --save-data-dir ./data/processed/ --max-len 128 --src-model-path ./weights_models/ru.model --trg-model-path ./weights_models/en.model``
 
 Train
+
 ``python train.py --train-path ./data/processed/train.ru_en.pkl --val-path ./data/processed/val.ru_en.pkl --embedding-size 512 --n-heads 8 --n-layers 6 --dropout 0.1 --lr 0.0002 --max-epochs 10 --batch-size 64 --src-vocab-size 4000 --trg-vocab-size 4000 --src-lang ru --trg-lang en --max-seq-len 128 --display-freq 100 --model-path ./weights_models/transformer.pt``
 
 
