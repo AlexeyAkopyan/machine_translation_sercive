@@ -1,0 +1,8 @@
+name: nmt_service
+
+docker_env:
+  image: nmt_service
+
+entry_points:
+  main:
+    command: "python /nmt_service/test.py"
