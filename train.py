@@ -17,7 +17,6 @@ import torch.optim as optim
 from src.preprocessing import data_utils
 from src.preprocessing.data_utils import load_train_data
 from src.models.transfomer import Transformer
-from src.optimizer import ScheduledOptimizer
 
 use_cuda = torch.cuda.is_available()
 
@@ -136,63 +135,6 @@ def train(train_dataloader, model, criterion, optimizer, scheduler, model_state,
     logger.info(f"Training epoch took: {timedelta(seconds=int(time.time() - start))}")
     return train_losses
 
-    model.train()
-    cfg = model_state['cfg']
-    train_loss, train_loss_total = 0.0, 0.0
-    n_words, n_words_total = 0, 0
-    n_sents, n_sents_total = 0, 0
-    start_time = time.time()
-
-    for batch_idx, batch in enumerate(train_iter):
-        enc_inputs, enc_inputs_len = batch.src
-        dec_, dec_inputs_len = batch.trg
-        dec_inputs = dec_[:, :-1]
-        dec_targets = dec_[:, 1:]
-        dec_inputs_len = dec_inputs_len - 1
-
-        # Execute a single training step: forward
-        optimizer.zero_grad()
-        dec_logits, _, _, _ = model(enc_inputs, enc_inputs_len,
-                                    dec_inputs, dec_inputs_len)
-        step_loss = criterion(dec_logits, dec_targets.contiguous().view(-1))
-
-        # Execute a single training step: backward
-        step_loss.backward()
-        if cfg.max_grad_norm:
-            clip_grad_norm(model.trainable_params(), float(cfg.max_grad_norm))
-        optimizer.step()
-        optimizer.update_lr()
-        model.proj_grad()  # works only for weighted transformer
-
-        train_loss_total += float(step_loss.data.item())
-        n_words_total += torch.sum(dec_inputs_len)
-        n_sents_total += dec_inputs_len.size(0)  # batch_size
-        model_state['train_steps'] += 1
-
-        # Display training status
-        if model_state['train_steps'] % cfg.display_freq == 0:
-            loss_int = (train_loss_total - train_loss)
-            n_words_int = (n_words_total - n_words)
-            n_sents_int = (n_sents_total - n_sents)
-
-            loss_per_words = loss_int / n_words_int
-            avg_ppl = math.exp(loss_per_words) if loss_per_words < 300 else float("inf")
-            time_elapsed = (time.time() - start_time)
-            step_time = time_elapsed / cfg.display_freq
-
-            n_words_sec = n_words_int / time_elapsed
-            n_sents_sec = n_sents_int / time_elapsed
-
-            logger.info(
-                f"Epoch {model_state['curr_epochs']:<3} Step {model_state['train_steps']:<10}" +
-                f"Perplexity {avg_ppl:<10.2f} Step-time {step_time:<10.2f}" +
-                f"{n_sents_sec:.2f} sents/s {n_words_sec:>10.2f} words/s"
-            )
-            train_loss, n_words, n_sents = (train_loss_total, n_words_total, n_sents_total)
-            start_time = time.time()
-
-    # return per_word_loss over 1 epoch
-    return math.exp(train_loss_total / n_words_total), n_sents_total
 
 
 def eval(model, criterion, dev_iter):
