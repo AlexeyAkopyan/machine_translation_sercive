@@ -79,7 +79,7 @@ def main(cfg):
     for epoch in range(init_epoch + 1, cfg.max_epochs + 1):
         # Execute training steps for 1 epoch.
         train_loss = train(train_dataloader, model, criterion, optimizer, scheduler, model_state, device)
-        logger.info(f'Epoch {epoch} Train_ppl: {train_loss:.2f}')
+        #logger.info(f'Epoch {epoch} Train_ppl: {train_loss:.2f}')
 
         # Execute a validation step.
         # eval_loss, eval_sents = eval(model, criterion, val_dataloader)

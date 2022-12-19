@@ -8,6 +8,8 @@ import torch
 import argparse
 import logging
 import sys
+import mlflow
+import yaml
 
 from src.preprocessing import data_utils
 from src.preprocessing.data_utils import read_parallel_corpus
@@ -54,33 +56,41 @@ def get_text_transformer(max_len):
     )
 
 
-def main(cfg):
-    data = {
-        "train": read_parallel_corpus(cfg.train_src, cfg.train_trg, cfg.max_len, cfg.lower_case),
-        "val": read_parallel_corpus(cfg.val_src, cfg.val_trg, None, cfg.lower_case),
-        "test": read_parallel_corpus(cfg.test_src, cfg.test_trg, None, cfg.lower_case),
-    }
+def main(cfg_path):
+    mlflow.set_tracking_uri("./mlruns")
+    #exp_id = mlflow.set_experiment("test_2").experiment_id
+    with mlflow.start_run():
+        with open(cfg_path, "r") as f:
+            cfg = yaml.load(f, Loader=yaml.FullLoader)
+            cfg = argparse.Namespace(**cfg)
 
-    text_transformer = get_text_transformer(max_len=cfg.max_len)
+        data = {
+            "train": read_parallel_corpus(cfg.train_src, cfg.train_trg, cfg.max_len, cfg.lower_case),
+            "val": read_parallel_corpus(cfg.val_src, cfg.val_trg, None, cfg.lower_case),
+            "test": read_parallel_corpus(cfg.test_src, cfg.test_trg, None, cfg.lower_case),
+        }
 
-    if not os.path.exists(cfg.src_model_path):
-        l = len(cfg.src_model_path) - 6 if cfg.src_model_path.endswith(".model") else len(cfg.src_model_path)
-        train_tokenizer(cfg.train_src, cfg.src_size, prefix=cfg.src_model_path[:l])
+        text_transformer = get_text_transformer(max_len=cfg.max_len)
 
-    if not os.path.exists(cfg.trg_model_path):
-        l = len(cfg.trg_model_path) - 6 if cfg.trg_model_path.endswith(".model") else len(cfg.trg_model_path)
-        train_tokenizer(cfg.train_trg, cfg.trg_size, prefix=cfg.trg_model_path[:l])
+        if not os.path.exists(cfg.src_model_path):
+            l = len(cfg.src_model_path) - 6 if cfg.src_model_path.endswith(".model") else len(cfg.src_model_path)
+            train_tokenizer(cfg.train_src, cfg.src_size, prefix=cfg.src_model_path[:l])
 
-    for split in data:
+        if not os.path.exists(cfg.trg_model_path):
+            l = len(cfg.trg_model_path) - 6 if cfg.trg_model_path.endswith(".model") else len(cfg.trg_model_path)
+            train_tokenizer(cfg.train_trg, cfg.trg_size, prefix=cfg.trg_model_path[:l])
 
-        data[split] = (
-            torch.LongTensor(text_transformer(tokenize(data[split][0], cfg.src_model_path))),
-            torch.LongTensor(text_transformer(tokenize(data[split][1], cfg.trg_model_path))),
-        )
-        path = cfg.save_data_dir + "/" + f"{split}.{cfg.src_lang}_{cfg.trg_lang}.pkl"
+        for split in data:
 
-        with open(path, "wb") as file:
-            pickle.dump({cfg.src_lang: data[split][0], cfg.trg_lang: data[split][0]}, file)
+            data[split] = (
+                torch.LongTensor(text_transformer(tokenize(data[split][0], cfg.src_model_path))),
+                torch.LongTensor(text_transformer(tokenize(data[split][1], cfg.trg_model_path))),
+            )
+            path = cfg.save_data_dir + "/" + f"{split}.{cfg.src_lang}_{cfg.trg_lang}.pkl"
+
+            with open(path, "wb") as file:
+                pickle.dump({cfg.src_lang: data[split][0], cfg.trg_lang: data[split][0]}, file)
+        mlflow.log_artifacts(cfg.save_data_dir)
 
     # for split_name, split in train
     # torch.save(src_encoded, "train_" + )
@@ -137,26 +147,26 @@ def main(cfg):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Preprocessing')
+    parser.add_argument("--config_path", required=True, type=str)
 
-    parser.add_argument('--train-src', required=True, type=str, help='Path to training source data')
-    parser.add_argument('--train-trg', required=True, type=str, help='Path to training target data')
-    parser.add_argument('--val-src', required=True, type=str, help='Path to validation source data')
-    parser.add_argument('--val-trg', required=True, type=str, help='Path to validation target data')
-    parser.add_argument('--test-src', required=True, type=str, help='Path to test source data')
-    parser.add_argument('--test-trg', required=True, type=str, help='Path to test target data')
-    parser.add_argument('--src-lang', required=True, type=str, help='Source language abbreviation')
-    parser.add_argument('--trg-lang', required=True, type=str, help='Target language abbreviation')
-    parser.add_argument('--src-size', type=int, default=1000, help='Source vocabulary size')
-    parser.add_argument('--trg-size', type=int, default=1000, help='Target vocabulary size')
-    # parser.add_argument('--min-word-count', type=int, default=1)
-    parser.add_argument('--max-len', type=int, default=64, help='Maximum sequence length')
-    parser.add_argument('--lower-case', action='store_true')
-    parser.add_argument('--share-vocab', action='store_true')
-    parser.add_argument('--save-data-dir', required=True, type=str, help='Output directory for the prepared data')
-    parser.add_argument('--src-model-path', required=True, type=str, help='Path to source tokenizer model')
-    parser.add_argument('--trg-model-path', required=True, type=str, help='Path to target tokenizer model')
-
+    # parser.add_argument('--train-src', required=True, type=str, help='Path to training source data')
+    # parser.add_argument('--train-trg', required=True, type=str, help='Path to training target data')
+    # parser.add_argument('--val-src', required=True, type=str, help='Path to validation source data')
+    # parser.add_argument('--val-trg', required=True, type=str, help='Path to validation target data')
+    # parser.add_argument('--test-src', required=True, type=str, help='Path to test source data')
+    # parser.add_argument('--test-trg', required=True, type=str, help='Path to test target data')
+    # parser.add_argument('--src-lang', required=True, type=str, help='Source language abbreviation')
+    # parser.add_argument('--trg-lang', required=True, type=str, help='Target language abbreviation')
+    # parser.add_argument('--src-size', type=int, default=1000, help='Source vocabulary size')
+    # parser.add_argument('--trg-size', type=int, default=1000, help='Target vocabulary size')
+    # # parser.add_argument('--min-word-count', type=int, default=1)
+    # parser.add_argument('--max-len', type=int, default=64, help='Maximum sequence length')
+    # parser.add_argument('--lower-case', action='store_true')
+    # parser.add_argument('--share-vocab', action='store_true')
+    # parser.add_argument('--save-data-dir', required=True, type=str, help='Output directory for the prepared data')
+    # parser.add_argument('--src-model-path', required=True, type=str, help='Path to source tokenizer model')
+    # parser.add_argument('--trg-model-path', required=True, type=str, help='Path to target tokenizer model')
 
     cfg = parser.parse_args()
     logger.info(str(cfg))
-    main(cfg)
+    main(cfg.config_path)

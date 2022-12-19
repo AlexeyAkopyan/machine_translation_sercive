@@ -4,5 +4,9 @@ docker_env:
   image: nmt_service
 
 entry_points:
+  preprocess:
+    parameters:
+      config_path: path
+    command: "python preprocess.py --config_path {config_path}"
   main:
-    command: "python /nmt_service/test.py"
+    command: "python main.py"

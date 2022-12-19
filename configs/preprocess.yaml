@@ -1,0 +1,17 @@
+train_src: ./data/raw/train.ru_en.ru
+train_trg: ./data/raw/train.ru_en.en
+val_src: ./data/raw/valid.ru_en.ru
+val_trg: ./data/raw/valid.ru_en.en
+test_src: ./data/raw/test.ru_en.ru
+test_trg: ./data/raw/test.ru_en.en
+src_lang: ru
+trg_lang: en
+src_size: 4000
+trg_size: 4000
+save_data_dir: ./data/processed/
+max_len: 128
+src_model_path: ./weights_models/ru.model
+trg_model_path: ./weights_models/en.model
+lower_case: True
+share_vocab: True
+
