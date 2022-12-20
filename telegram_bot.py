@@ -54,7 +54,7 @@ def main(cfg):
     #                                 device, cfg.max_seq_len))
 
     # Initiate the bot and add command handler
-    updater = Updater('5645760635:AAE15sPGqvGFilpXRx00rhqw7v3P9r8bHHM', use_context=True)
+    updater = Updater('YOUR_TELEGRAM_TOKEN', use_context=True)
     updater.dispatcher.add_handler(MessageHandler(
         Filters.text, lambda u, c: telegram_translate(
             u, c, model=model, src_tokenizer_path=cfg.src_tokenizer_path, trg_tokenizer_path=cfg.trg_tokenizer_path,
