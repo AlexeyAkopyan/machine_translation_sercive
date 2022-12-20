@@ -14,7 +14,9 @@ Train
 
 ``python train.py --train-path ./data/processed/train.ru_en.pkl --val-path ./data/processed/val.ru_en.pkl --embedding-size 512 --n-heads 8 --n-layers 6 --dropout 0.1 --lr 0.0002 --max-epochs 10 --batch-size 64 --src-vocab-size 4000 --trg-vocab-size 4000 --src-lang ru --trg-lang en --max-seq-len 128 --display-freq 100 --model-path ./weights_models/transformer.pt``
 
-
+Data
+-------
+https://drive.google.com/drive/folders/1XfUL9D6jeMv1ylD4pw7OOparCKQCvXkQ?usp=sharing
 
 
 Project Organization
