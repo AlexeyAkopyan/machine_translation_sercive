@@ -46,15 +46,11 @@ def telegram_translate(update, context, **kwards):
 
 
 def main(cfg):
-    # logger.info("SRC: " + cfg.src_sentence)
     _, model = load_checkpoint(cfg.model_path, load_optimizer=False, load_scheduler=False)
     device = torch.device("cuda") if cfg.use_cuda else torch.device("cpu")
 
-    # logger.info("TRG: " + translate(model, cfg.src_sentence, cfg.src_tokenizer_path, cfg.trg_tokenizer_path,
-    #                                 device, cfg.max_seq_len))
-
     # Initiate the bot and add command handler
-    updater = Updater('YOUR_TELEGRAM_TOKEN', use_context=True)
+    updater = Updater(cfg.telegram_token, use_context=True)
     updater.dispatcher.add_handler(MessageHandler(
         Filters.text, lambda u, c: telegram_translate(
             u, c, model=model, src_tokenizer_path=cfg.src_tokenizer_path, trg_tokenizer_path=cfg.trg_tokenizer_path,
@@ -67,6 +63,7 @@ def main(cfg):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Translation hyperparams')
+    parser.add_argument('--telegram-token', required=True, type=str, help='Telegram bot token')
     parser.add_argument('--model-path', required=True, type=str, help='Path to the test data')
     parser.add_argument('--src-sentence', required=True, type=str, help='Path to an existing vocabulary file')
     parser.add_argument('--max-seq-len', type=int, default=100,
