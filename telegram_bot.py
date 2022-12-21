@@ -65,7 +65,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Translation hyperparams')
     parser.add_argument('--telegram-token', required=True, type=str, help='Telegram bot token')
     parser.add_argument('--model-path', required=True, type=str, help='Path to the test data')
-    parser.add_argument('--src-sentence', required=True, type=str, help='Path to an existing vocabulary file')
     parser.add_argument('--max-seq-len', type=int, default=100,
                         help='Maximum len of sentence to generate. Counted in subwords')
     parser.add_argument('--src-tokenizer-path', required=True, type=str, help='Path to source tokenizer model')
