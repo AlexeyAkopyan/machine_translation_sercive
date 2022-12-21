@@ -1,7 +1,12 @@
 Initial steps
 --------------------
 
-``conda env create --file env.yaml``
+``
+conda env create --file env.yaml
+conda activate nmt_service
+pip install python-telegram-bot
+conda install -c conda-forge youtokentome
+``
 
 
 Run ``python test.py`` to ensure everything works.
