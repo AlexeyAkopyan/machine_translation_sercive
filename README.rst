@@ -11,23 +11,26 @@ conda install -c conda-forge youtokentome
 
 Run ``python test.py`` to ensure everything works.
 
-Preprocess
+Script configurations
+--------------------
 
-``python preprocess.py --train-src data/raw/train.ru_en.ru --train-trg data/raw/train.ru_en.en --val-src data/raw/valid.ru_en.ru --val-trg data/raw/valid.ru_en.en --test-src data/raw/test.ru_en.ru --test-trg data/raw/test.ru_en.en --src-lang ru --trg-lang en --src-size 4000 --trg-size 4000 --save-data-dir ./data/processed/ --max-len 128 --src-model-path ./weights_models/ru.model --trg-model-path ./weights_models/en.model``
+**Preprocess**
 
-Train
+``python preprocess.py --train-src data/raw/train.ru_en.ru --train-trg data/raw/train.ru_en.en --val-src data/raw/valid.ru_en.ru --val-trg data/raw/valid.ru_en.en --test-src data/raw/test.ru_en.ru --test-trg data/raw/test.ru_en.en --src-lang ru --trg-lang en --src-size 10000 --trg-size 10000 --save-data-dir ./data/processed/ --max-len 64 --src-model-path ./weights_models/ru.model --trg-model-path ./weights_models/en.model``
 
-``python train.py --train-path ./data/processed/train.ru_en.pkl --val-path ./data/processed/val.ru_en.pkl --embedding-size 512 --n-heads 8 --n-layers 6 --dropout 0.1 --lr 0.0002 --max-epochs 10 --batch-size 64 --src-vocab-size 4000 --trg-vocab-size 4000 --src-lang ru --trg-lang en --max-seq-len 128 --display-freq 100 --model-path ./weights_models/transformer.pt``
+**Train**
 
-Generate
+``python train.py --train-path ./data/processed/train.ru_en.pkl --val-path ./data/processed/val.ru_en.pkl --embedding-size 512 --n-heads 8 --n-layers 3 --dropout 0.1 --lr 0.0002 --max-epochs 100 --batch-size 128 --src-vocab-size 10000 --trg-vocab-size 10000 --src-lang ru --trg-lang en --max-seq-len 64 --display-freq 100 --model-path ./weights_models/transformer.pt``
 
-``python generate.py --model-path ./weights_models/transformer.pt --src-sentence YOUR_EN_SENTENCE --max-seq-len 64 --src-tokenizer-path ./weights_models/ru_tokenizer.model --trg-tokenizer-path ./weights_models/en_tokenizer.model --use-cuda True``
+**Generate**
 
-Run telegram bot
+``python generate.py --model-path ./weights_models/transformer.pt --src-sentence "YOUR_EN_SENTENCE" --max-seq-len 64 --src-tokenizer-path ./weights_models/ru_tokenizer.model --trg-tokenizer-path ./weights_models/en_tokenizer.model --use-cuda True``
+
+**Run telegram bot**
 
 Before run a telegram bot the telegram bot token is need to be created and passed as --telegram-token argument.
 
-``python telegram_bot.py --telegram-token "YOUR_TELEGRAM_TOKEN" --model-path ./weights_models/transformer.pt --max-seq-len 64 --src-tokenizer-path ./weights_models/ru_tokenizer.model --trg-tokenizer-path ./weights_models/en_tokenizer.model --use-cuda True`` -
+``python telegram_bot.py --telegram-token "YOUR_TELEGRAM_TOKEN" --model-path ./weights_models/transformer.pt --max-seq-len 64 --src-tokenizer-path ./weights_models/ru_tokenizer.model --trg-tokenizer-path ./weights_models/en_tokenizer.model --use-cuda True``
 
 Data location
 -------
