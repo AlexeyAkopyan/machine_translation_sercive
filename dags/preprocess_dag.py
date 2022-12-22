@@ -5,10 +5,10 @@ from airflow.operators.dummy import DummyOperator
 from airflow.decorators import task
 from airflow.utils.edgemodifier import Label
 
-# Docker library from PIP
+
 import docker
 
-# Simple DAG
+
 with DAG(
     "process_train", 
     start_date=datetime(2015, 2, 2), 
@@ -20,11 +20,11 @@ with DAG(
     @task(task_id='preprocess')
     def run_preprocess(**kwargs):
 
-        # get the docker params from the environment
+  
         client = docker.from_env()
           
             
-        # run the container
+     
         command = (
             "python preprocess.py --train-src data/raw/train.ru_en.ru "
             "--train-trg data/raw/train.ru_en.en "
@@ -43,10 +43,10 @@ with DAG(
 
         response = client.containers.run(
 
-             # The container you wish to call
+        
              'nmt_service:latest',
 
-             # The command to run inside the container
+             
              command,
 
              stdout=True,
@@ -55,12 +55,12 @@ with DAG(
              detach=True, 
              remove=True,
 
-             # Passing the GPU access
+       
              device_requests=[
                  docker.types.DeviceRequest(count=-1, capabilities=[['gpu']])
              ], 
              
-             # Give the proper system volume mount point
+             
              volumes=[
                  '/home/iref/Repos/machine_translation_sercive/data:/nmt_service/data',
                  '/home/iref/Repos/machine_translation_sercive/weights_models:/nmt_service/weights_models'
@@ -78,7 +78,7 @@ with DAG(
     @task(task_id='train')
     def run_train(**kwargs):
 
-        # get the docker params from the environment
+      
         client = docker.from_env()
           
             
@@ -105,10 +105,9 @@ with DAG(
 
         response = client.containers.run(
 
-             # The container you wish to call
              'nmt_service:latest',
 
-             # The command to run inside the container
+            
              command,
 
              stdout=True,
@@ -117,12 +116,12 @@ with DAG(
              detach=True, 
              remove=True,
 
-             # Passing the GPU access
+            
              device_requests=[
                  docker.types.DeviceRequest(count=-1, capabilities=[['gpu']])
              ], 
              
-             # Give the proper system volume mount point
+             
              volumes=[
                  '/home/iref/Repos/machine_translation_sercive/data:/nmt_service/data',
                  '/home/iref/Repos/machine_translation_sercive/weights_models:/nmt_service/weights_models'
@@ -145,5 +144,5 @@ with DAG(
     #end   = DummyOperator(task_id='end')
 
 
-    # Create a simple workflow
+   
     run_preprocess_task >> run_train_task
