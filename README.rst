@@ -1,6 +1,7 @@
 Initial steps
 --------------------
 
+DEVELOPMENT DEPENDENCIES:
 ```
 conda env create --file env.yaml
 conda activate nmt_service
@@ -8,6 +9,14 @@ pip install python-telegram-bot
 conda install -c conda-forge youtokentome
 ```
 
+USER DEPENDENCIES:
+```
+docker build -t nmt_service -f Dockerfile .
+echo -e "AIRFLOW_UID=$(id -u)" > .env
+docker-compose up airflow-init
+sudo chmod 757 /var/run/docker.sock
+docker compose up
+```
 
 Run ``python test.py`` to ensure everything works.
 
