@@ -2,6 +2,7 @@ Initial steps
 --------------------
 
 DEVELOPMENT DEPENDENCIES:
+
 ```
 conda env create --file env.yaml
 conda activate nmt_service
@@ -10,6 +11,7 @@ conda install -c conda-forge youtokentome
 ```
 
 USER DEPENDENCIES:
+
 ```
 docker build -t nmt_service -f Dockerfile .
 echo -e "AIRFLOW_UID=$(id -u)" > .env
