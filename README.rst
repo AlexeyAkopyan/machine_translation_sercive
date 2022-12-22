@@ -3,27 +3,29 @@ Initial steps
 
 DEVELOPMENT DEPENDENCIES:
 
-```
-conda env create --file env.yaml
-conda activate nmt_service
-pip install python-telegram-bot
-conda install -c conda-forge youtokentome
-```
+   .. code-block::
+
+      conda env create --file env.yaml
+      conda activate nmt_service
+      pip install python-telegram-bot
+      conda install -c conda-forge youtokentome
+
 
 USER DEPENDENCIES:
 
-```
-docker build -t nmt_service -f Dockerfile .
-echo -e "AIRFLOW_UID=$(id -u)" > .env
-docker-compose up airflow-init
-sudo chmod 757 /var/run/docker.sock
-docker compose up
-```
+   .. code-block:: 
+
+      docker build -t nmt_service -f Dockerfile .
+      echo -e "AIRFLOW_UID=$(id -u)" > .env
+      docker-compose up airflow-init
+      sudo chmod 757 /var/run/docker.sock
+      docker compose up
+
 
 Run ``python test.py`` to ensure everything works.
 
 Script configurations
---------------------
+----------------------
 
 **Preprocess**
 
@@ -44,7 +46,7 @@ Before run a telegram bot the telegram bot token is need to be created and passe
 ``python telegram_bot.py --telegram-token "YOUR_TELEGRAM_TOKEN" --model-path ./weights_models/transformer.pt --max-seq-len 64 --src-tokenizer-path ./weights_models/ru_tokenizer.model --trg-tokenizer-path ./weights_models/en_tokenizer.model --use-cuda True``
 
 Data location
--------
+----------------
 https://drive.google.com/drive/folders/1XfUL9D6jeMv1ylD4pw7OOparCKQCvXkQ?usp=sharing
 
 
