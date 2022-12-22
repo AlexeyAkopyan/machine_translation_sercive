@@ -87,6 +87,17 @@ services:
       retries: 5
     restart: always
 
+  inference:
+    image: nmt_service_inference
+    command: python telegram_bot.py --telegram-token "5645760635:AAE15sPGqvGFilpXRx00rhqw7v3P9r8bHHM" --model-path ./weights_models/transformer.pt --max-seq-len 64 --src-tokenizer-path ./weights_models/ru_tokenizer.model --trg-tokenizer-path ./weights_models/en_tokenizer.model --use-cuda True
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
   redis:
     image: redis:latest
     expose:
