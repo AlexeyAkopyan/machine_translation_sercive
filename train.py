@@ -124,7 +124,7 @@ def main(cfg):
         model_state["optimizer_params"] = optimizer.state_dict()
         model_state["scheduler_params"] = scheduler.state_dict()
 
-        # torch.save(model_state, cfg.model_path)
+        torch.save(model_state, cfg.model_path)
         logger.info('The model checkpoint file has been saved')
 
 
@@ -135,6 +135,10 @@ def train(train_dataloader, model, criterion, optimizer, scheduler, model_state,
     n_sents, n_sents_total = 0, 0
 
     for batch_idx, batch in enumerate(train_dataloader):
+
+        # if batch_idx > 10:
+        #     break
+
         optimizer.zero_grad()
         inp_data = batch[0].T.to(device)
         target = batch[1].T.to(device)
@@ -183,6 +187,10 @@ def eval(val_dataloader, model, criterion, device):
 
     with torch.no_grad():
         for batch_idx, batch in enumerate(val_dataloader):
+
+            # if batch_idx > 10:
+            #     break
+
             inp_data = batch[0].T.to(device)
             target = batch[1].T.to(device)
 

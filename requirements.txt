@@ -6,4 +6,4 @@ matplotlib
 torchtext
 transformers
 tensorboard
-youtokentome
+youtokentome==1.0.6
