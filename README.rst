@@ -11,6 +11,11 @@ conda install -c conda-forge youtokentome
 
 Run ``python test.py`` to ensure everything works.
 
+Usage
+--------------------
+``python cli.py``
+
+
 Script configurations
 --------------------
 
