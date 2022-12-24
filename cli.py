@@ -85,20 +85,20 @@ def main():
     n_beams = 5
     n_suggestions = 5
     src_text = input("Write sentence in Russian to translate: ")
-    trg_text, src_token_ids, trg_tokens_ids = translate(model, src_text, tokenizer, device, max_len)
+    trg_text, src_token_ids, trg_token_ids = translate(model, src_text, tokenizer, device, max_len)
     print("Translation: ", trg_text)
     while True:
         print("Enter 1 to translate new sentence, 2 to correct just translated sentence, 3 to exit.")
         next_step = int(input("Your choice: "))
         if next_step == 1:
             src_text = input("Write sentence in Russian to translate:")
-            trg_text, src_token_ids, trg_tokens_ids = translate(model, src_text, tokenizer, device, max_len)
+            trg_text, src_token_ids, trg_token_ids = translate(model, src_text, tokenizer, device, max_len)
             print("Translation: ", trg_text)
         elif next_step == 2:
-            print(list(enumerate(tokenizer.convert_ids_to_tokens(trg_tokens_ids[1:-1]), start=1)))
+            print(list(enumerate(tokenizer.convert_ids_to_tokens(trg_token_ids[1:-1]), start=1)))
             word_to_change = int(input("Select index of word to change: "))
             corrected = correct_n_word(model=model, n=n_suggestions, max_len=max_len, k=n_beams, device=device,
-                                       src_tokens=src_token_ids, trg_tokens_start=trg_tokens_ids[:word_to_change + 1])
+                                       src_tokens=src_token_ids, trg_tokens_start=trg_token_ids[:word_to_change + 1])
             print(list(enumerate([tokenizer.decode(sent[word_to_change]) for sent in corrected], start=1)))
             selected_suggestion = int(input("Select index of replacing word: ")) - 1
             trg_tokens_ids = corrected[selected_suggestion]
